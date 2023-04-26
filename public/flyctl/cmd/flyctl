@@ -1,0 +1,67 @@
+<p>flyctl is a command line interface to the Fly.io platform.</p>
+<p>It allows users to manage authentication, application launch,
+deployment, network configuration, logging and more with just the
+one command.</p>
+
+<ul>
+<li>Launch an app with the launch command
+</li><li>Deploy an app with the deploy command
+</li><li>View a deployed web application with the open command
+</li><li>Check the status of an application with the status command
+</li></ul>
+<p>To read more, use the docs command to view Fly&#39;s help on the web.</p>
+<h2 id='usage' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#usage' aria-label='Anchor'></a>Usage</h2><div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>flyctl [flags]
+</code></pre></div><h2 id='available-commands' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#available-commands' aria-label='Anchor'></a>Available Commands</h2>
+<ul>
+<li><a href="/docs/flyctl/agent/">agent</a>   - Commands that manage the Fly agent, a background process that manages flyctl wireguard connections
+</li><li><a href="/docs/flyctl/apps/">apps</a>     - Manage apps
+</li><li><a href="/docs/flyctl/auth/">auth</a>     - Manage authentication
+</li><li><a href="/docs/flyctl/autoscale/">autoscale</a>   - Autoscaling app resources
+</li><li><a href="/docs/flyctl/certs/">certs</a>   - Manage certificates
+</li><li><a href="/docs/flyctl/checks/">checks</a>     - Manage health checks
+</li><li><a href="/docs/flyctl/config/">config</a>     - Manage an app&#39;s configuration
+</li><li><a href="/docs/flyctl/curl/">curl</a>     - Run a performance test against a URL
+</li><li><a href="/docs/flyctl/dashboard/">dashboard</a>   - Open web browser on Fly Web UI for this app
+</li><li><a href="/docs/flyctl/deploy/">deploy</a>     - Deploy Fly applications
+</li><li><a href="/docs/flyctl/destroy/">destroy</a>   - Permanently destroys an app
+</li><li><a href="/docs/flyctl/dig/">dig</a>   - Make DNS requests against Fly.io&#39;s internal DNS server
+</li><li><a href="/docs/flyctl/dns-records/">dns-records</a>   - Manage DNS records
+</li><li><a href="/docs/flyctl/docs/">docs</a>     - View Fly documentation
+</li><li><a href="/docs/flyctl/doctor/">doctor</a>     - The DOCTOR command allows you to debug your Fly environment
+</li><li><a href="/docs/flyctl/history/">history</a>   - List an app&#39;s change history
+</li><li><a href="/docs/flyctl/image/">image</a>   - Manage app image
+</li><li><a href="/docs/flyctl/ips/">ips</a>   - Manage IP addresses for apps
+</li><li><a href="/docs/flyctl/jobs/">jobs</a>     - Show jobs at Fly.io
+</li><li><a href="/docs/flyctl/launch/">launch</a>     - Create and configure a new app from source code or a Docker image.
+</li><li><a href="/docs/flyctl/logs/">logs</a>     - View app logs
+</li><li><a href="/docs/flyctl/machine/">machine</a>   - Commands that manage machines
+</li><li><a href="/docs/flyctl/monitor/">monitor</a>   - Monitor currently running application deployments
+</li><li><a href="/docs/flyctl/move/">move</a>     - Move an app to another organization
+</li><li><a href="/docs/flyctl/open/">open</a>     - Open browser to current deployed application
+</li><li><a href="/docs/flyctl/orgs/">orgs</a>     - Commands for managing Fly organizations
+</li><li><a href="/docs/flyctl/ping/">ping</a>     - Test connectivity with ICMP ping messages
+</li><li><a href="/docs/flyctl/platform/">platform</a>     - Fly platform information
+</li><li><a href="/docs/flyctl/postgres/">postgres</a>     - Manage Postgres clusters.
+</li><li><a href="/docs/flyctl/proxy/">proxy</a>   - Proxies connections to a fly VM
+</li><li><a href="/docs/flyctl/redis/">redis</a>   - Launch and manage Redis databases managed by Upstash.com
+</li><li><a href="/docs/flyctl/regions/">regions</a>   - Manage regions
+</li><li><a href="/docs/flyctl/releases/">releases</a>     - List app releases
+</li><li><a href="/docs/flyctl/resume/">resume</a>     - Resume an application
+</li><li><a href="/docs/flyctl/scale/">scale</a>   - Scale app resources
+</li><li><a href="/docs/flyctl/secrets/">secrets</a>   - Manage application secrets with the set and unset commands.
+</li><li><a href="/docs/flyctl/services/">services</a>     - Show the application&#39;s services
+</li><li><a href="/docs/flyctl/sftp/">sftp</a>     - Get or put files from a remote VM.
+</li><li><a href="/docs/flyctl/ssh/">ssh</a>   - Use SSH to login to or run commands on VMs
+</li><li><a href="/docs/flyctl/status/">status</a>     - Show app status
+</li><li><a href="/docs/flyctl/suspend/">suspend</a>   - Suspend an application
+</li><li><a href="/docs/flyctl/turboku/">turboku</a>   - Launch a Heroku app on Fly.io
+</li><li><a href="/docs/flyctl/version/">version</a>   - Show version information for the flyctl command
+</li><li><a href="/docs/flyctl/vm/">vm</a>     - Commands that manage VM instances
+</li><li><a href="/docs/flyctl/volumes/">volumes</a>   - Volume management commands
+</li><li><a href="/docs/flyctl/wireguard/">wireguard</a>   - Commands that manage WireGuard peer connections
+</li></ul>
+<h2 id='options' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#options' aria-label='Anchor'></a>Options</h2><div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>  -t, --access-token string   Fly API Access Token
+  -h, --help                  help for flyctl
+  -j, --json                  json output
+      --verbose               verbose output
+</code></pre></div><h2 id='see-also' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#see-also' aria-label='Anchor'></a>See Also</h2>

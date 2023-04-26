@@ -1,0 +1,109 @@
+<h2 id='rationale' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#rationale' aria-label='Anchor'></a>Rationale</h2><p><strong class='font-semibold text-navy'>Appkata</strong>: The application fighting style - and a series of application-centric examples for Fly.io.</p>
+<p>The fundamental tool of modern development is a version control system, most often Git. Let&#39;s get some Git on Fly. If we just skip past creating a bare Git server because that&#39;s no fun, we find Gogs. Gogs bills itself as &quot;a painless self-hosted Git service&quot; and comes ready-packed as an easier to install, and complete Git service, including a web front end for issues and pull requests.</p>
+<p>Let&#39;s get Gogs going on Fly. Our starting point is <a href="https://github.com/gogs/gogs/tree/main/docker">gogs/docker</a> which has all the configuration and files related to the official Gogs docker image. It&#39;s that image we are going to build with. We are going to use  that image to deploy on Fly.</p>
+<h2 id='databases' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#databases' aria-label='Anchor'></a>Databases</h2><p>Gogs needs the support of a database, typically MySQL or Postgres, which would involve deploying a whole separate process. But it also supports using SQLite3 as a local database. The database will need persistent disk space. We&#39;ll use the Fly Volumes feature to give our application that disk space.</p>
+<h2 id='ports' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#ports' aria-label='Anchor'></a>Ports</h2><p>Gogs runs a web service on port 3000 and an SSH service on port 22. We&#39;ll get Fly to redirect the web service to port&#39;s 80 and 443, and put SSH on port 10022. First though, some initialization</p>
+<div class='highlight relative group cmd'><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight bash'><code><span class="o">&gt;</span> fly init appkata-gogs <span class="nt">--image</span> gogs/gogs <span class="nt">--org</span> personal <span class="nt">--port</span> 3000
+</code></pre></div><div class='highlight relative group output'><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>
+Selected App Name: appkata-gogs
+
+New app created
+  Name         = appkata-gogs
+  Organization = personal
+  Version      = 0
+  Status       =
+  Hostname     = &lt;empty&gt;
+
+App will initially deploy to lhr (London, United Kingdom) region
+</code></pre></div><p>This generates a <code>fly.toml</code> file with the basic components for configuring our gogs:</p>
+<div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight toml'><code><span class="c"># fly.toml file generated for appkata-gogs on 2020-11-02T16:00:06Z</span>
+
+<span class="py">app</span> <span class="p">=</span> <span class="s">"appkata-gogs"</span>
+
+<span class="nn">[build]</span>
+<span class="py">image</span> <span class="p">=</span> <span class="s">"gogs/gogs"</span>
+
+<span class="nn">[[services]]</span>
+<span class="py">internal_port</span> <span class="p">=</span> <span class="mi">3000</span>
+<span class="py">protocol</span> <span class="p">=</span> <span class="s">"tcp"</span>
+
+  <span class="nn">[services.concurrency]</span>
+  <span class="py">hard_limit</span> <span class="p">=</span> <span class="mi">25</span>
+  <span class="py">soft_limit</span> <span class="p">=</span> <span class="mi">20</span>
+
+  <span class="nn">[[services.ports]]</span>
+  <span class="py">handlers</span> <span class="p">=</span> <span class="p">[</span><span class="s">"http"</span><span class="p">]</span>
+  <span class="py">port</span> <span class="p">=</span> <span class="s">"80"</span>
+
+  <span class="nn">[[services.ports]]</span>
+  <span class="py">handlers</span> <span class="p">=</span> <span class="p">[</span><span class="s">"tls"</span><span class="p">,</span> <span class="s">"http"</span><span class="p">]</span>
+  <span class="py">port</span> <span class="p">=</span> <span class="s">"443"</span>
+
+  <span class="nn">[[services.tcp_checks]]</span>
+  <span class="py">interval</span> <span class="p">=</span> <span class="mi">10000</span>
+  <span class="py">timeout</span> <span class="p">=</span> <span class="mi">2000</span>
+</code></pre></div><p>This is the barebones of a configuration. It only redirects port 3000. The next step is to add a service to  handle SSH communications from Gogs. Append this to <code>fly.toml</code>:</p>
+<div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight toml'><code><span class="nn">[[services]]</span>
+<span class="py">internal_port</span> <span class="p">=</span> <span class="mi">22</span>
+<span class="py">protocol</span>      <span class="p">=</span> <span class="s">"tcp"</span>
+
+    <span class="nn">[[services.ports]]</span>
+    <span class="py">handlers</span> <span class="p">=</span> <span class="p">[]</span>
+    <span class="py">port</span>     <span class="p">=</span> <span class="mi">10022</span>
+
+    <span class="nn">[[services.tcp_checks]]</span>
+    <span class="py">interval</span> <span class="p">=</span> <span class="mi">10000</span>
+    <span class="py">timeout</span>  <span class="p">=</span> <span class="mi">2000</span>
+</code></pre></div><p>This passes traffic on 10022 through to Gogs on port 22. There&#39;s no handler needed for this, but it is checked as part of the Fly health checks.</p>
+<h2 id='persistent-disks' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#persistent-disks' aria-label='Anchor'></a>Persistent Disks</h2><p>With the other port set up, we then move to the persistent data storage. Make a Fly volume in the region where the app will be running. When we &quot;inited&quot; the app, it told us it would initially be deployed to London, LHR region. Let&#39;s create a default (10GB) sized volume called <code>data</code> there:</p>
+<div class='highlight relative group cmd'><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight bash'><code>fly volumes create data <span class="nt">--region</span> lhr
+</code></pre></div><div class='highlight relative group output'><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>        ID: JD20D7DMOVAequGbLPR
+      Name: data
+    Region: lhr
+   Size GB: 10
+Created at: 04 Nov 20 09:45 UTC
+</code></pre></div><p>The Gogs image expects to see its data volume mounted on /data. To do that, it&#39;s back to <code>fly.toml</code> to add a <code>mounts</code> section for our new volume:</p>
+<div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight toml'><code><span class="nn">[[mounts]]</span>
+<span class="py">source</span><span class="p">=</span><span class="s">"data"</span>
+<span class="py">destination</span><span class="p">=</span><span class="s">"/data"</span>
+</code></pre></div><h2 id='deploying' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#deploying' aria-label='Anchor'></a>Deploying</h2><p>We can now deploy Gogs using the command <code>fly deploy.</code></p>
+<div class='highlight relative group cmd'><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight bash'><code>❯ fly deploy
+</code></pre></div><div class='highlight relative group output'><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>Deploying appkata-gogs
+==&gt; Validating App Configuration
+--&gt; Validating App Configuration done
+Services
+TCP 80/443 ⇢ 3000
+TCP 10022 ⇢ 22
+
+Deploying image: gogs/gogs
+
+--&gt; docker.io/gogs/gogs
+==&gt; Optimizing Image
+--&gt; Done Optimizing Image
+==&gt; Creating Release
+Release v0 created
+Deploying to : appkata-gogs.fly.dev
+
+Monitoring Deployment
+You can detach the terminal anytime without stopping the deployment
+
+1 desired, 1 placed, 1 healthy, 0 unhealthy [health checks: 2 total, 2 passing]
+--&gt; v0 deployed successfully
+</code></pre></div><p>Note the two health-checks which match up with the two health-checks in <code>fly.toml</code>.</p>
+<p>Gogs is now up and running and you can use <code>fly open</code> to go straight to the site where you&#39;ll be greeted by the first time run screen. Now it&#39;s time to configure our Gogs deployment.</p>
+<h2 id='custom-domains' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#custom-domains' aria-label='Anchor'></a>Custom Domains</h2><p>If you have a custom domain you want to use for your Gogs server, now is the time to set it up. You&#39;ll need to edit some DNS records so kick off the process with <code>fly certs add yourdomain</code> and it&#39;ll give you instructions as you go.</p>
+<h2 id='configuring-gogs' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#configuring-gogs' aria-label='Anchor'></a>Configuring Gogs</h2><p>The first stop on the install screen for Gogs is the database settings. As mentioned at the start, we want to set this to SQLlite3, which is nicely self-contained. We&#39;ll also want to make sure that the path is <code>/data/gogs.db</code> (an absolute path, not a relative one).</p>
+<p><img src="https://raw.githubusercontent.com/fly-examples/appkata-gogs/main/images//dbsettings.png" alt="Database Settings" /></p>
+<p>Scroll down and you&#39;ll come the application settings. We&#39;ll want to change the domain to the Fly domain (or your custom domain name). You&#39;ll also want to change the ssh port to the one we set in the fly.toml services (10022). The HTTP port doesn&#39;t need to change but the application URL should change to the same domain as the application URL and there&#39;s no need to set a port in the URL.</p>
+<p><img src="https://raw.githubusercontent.com/fly-examples/appkata-gogs/main/images/appsettings.png" alt="App Settings" /></p>
+<p>Finally, make sure to create your admin account otherwise anyone logging in first to the server will get access and thats not good.</p>
+<p><img src="https://raw.githubusercontent.com/fly-examples/appkata-gogs/main/images/adminsettings.png" alt="Admin Settings" /></p>
+<p>Click to install Gogs and it&#39;ll be set up with this configuration. You can now go back to the front page - run <code>fly open</code> if you can&#39;t remember the URL - and log in. You now have your own Git repository, issues tracker and more.</p>
+<h2 id='notes' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#notes' aria-label='Anchor'></a>Notes</h2>
+<ul>
+<li>Once set up, the configuration is effectively frozen - remember this when setting up. The clear the data and configuration, <code>fly suspend</code> the app, destroy the existing volume and create a new similarly named volume, then <code>fly resume</code> the app.
+</li></ul>
+<h2 id='discuss' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#discuss' aria-label='Anchor'></a>Discuss</h2>
+<ul>
+<li>You can discuss this example on the <a href="https://community.fly.io/t/gogs-standalone-git-service-as-a-fly-example/358">community.fly.io</a> topic.
+</li></ul>

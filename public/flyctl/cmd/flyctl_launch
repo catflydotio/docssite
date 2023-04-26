@@ -1,0 +1,41 @@
+<p>Create and configure a new app from source code or a Docker image.</p>
+<h2 id='usage' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#usage' aria-label='Anchor'></a>Usage</h2><div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>flyctl launch [flags]
+</code></pre></div><h2 id='options' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#options' aria-label='Anchor'></a>Options</h2><div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>      --auto-confirm                  Will automatically confirm changes when running non-interactively.
+      --build-arg strings             Set of build time variables in the form of NAME=VALUE pairs. Can be specified multiple times.
+      --build-only                    Build but do not deploy
+      --build-secret strings          Set of build secrets of NAME=VALUE pairs. Can be specified multiple times. See https://docs.docker.com/develop/develop-images/build_enhancements/#new-docker-build-secret-information
+      --build-target string           Set the target build stage to build if the Dockerfile has more than one stage
+      --copy-config                   Use the configuration file if present without prompting
+      --detach                        Return immediately instead of monitoring deployment progress
+      --dockerfile string             Path to a Dockerfile. Defaults to the Dockerfile in the working directory.
+      --dockerignore-from-gitignore   If a .dockerignore does not exist, create one from .gitignore files
+  -e, --env strings                   Set of environment variables in the form of NAME=VALUE pairs. Can be specified multiple times.
+      --force-machines                Use the Apps v2 platform built with Machines
+      --force-nomad                   Use the Apps v1 platform built with Nomad
+      --generate-name                 Always generate a name for the app, without prompting
+  -h, --help                          help for launch
+      --ignorefile string             Path to a Docker ignore file. Defaults to the .dockerignore file in the working directory.
+  -i, --image string                  The Docker image to deploy
+      --image-label string            Image label to use when tagging and pushing to the fly registry. Defaults to "deployment-{timestamp}".
+      --internal-port int             Set internal_port for all services in the generated fly.toml (default -1)
+      --lease-timeout int             Seconds to lease individual machines while running deployment. All machines are leased at the beginning and released at the end. The lease is refreshed periodically for this same time, which is why it is short. flyctl releases leases in most cases. (default 13)
+      --local-only                    Only perform builds locally using the local docker daemon
+      --name string                   Name of the new app
+      --nixpacks                      Deploy using nixpacks to build the image
+      --no-cache                      Do not use the build cache when building the image
+      --no-deploy                     Do not prompt for deployment
+      --now                           Deploy now without confirmation
+  -o, --org string                    The target Fly organization
+      --path string                   Path to the app source root, where fly.toml file will be saved (default ".")
+      --push                          Push image to registry after build is complete
+  -r, --region string                 The target region (see 'flyctl platform regions')
+      --remote-only                   Perform builds on a remote builder instance instead of using the local docker daemon
+      --strategy string               The strategy for replacing running instances. Options are canary, rolling, bluegreen, or immediate. Default is canary, or rolling when max-per-region is set.
+      --wait-timeout int              Seconds to wait for individual machines to transition states and become healthy. (default 120)
+</code></pre></div><h2 id='global-options' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#global-options' aria-label='Anchor'></a>Global Options</h2><div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>  -t, --access-token string   Fly API Access Token
+  -j, --json                  json output
+      --verbose               verbose output
+</code></pre></div><h2 id='see-also' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#see-also' aria-label='Anchor'></a>See Also</h2>
+<ul>
+<li><a href="/docs/flyctl/help/">flyctl</a>   - The Fly CLI
+</li></ul>

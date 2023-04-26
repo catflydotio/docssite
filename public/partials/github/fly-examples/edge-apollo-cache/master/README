@@ -1,0 +1,81 @@
+<p>This application demonstrates how to use Fly, Redis and Apollo to enable rapid GraphQL queries from a variety of data sources.</p>
+<p>Fly runs tiny virtual machines close to your users, and includes a global Redis cache. Apollo is a GraphQL server that integrates with a variety of data sources and can be run in Node. This application combines these three technologies to create a GraphQL server on Fly.</p>
+<p>It uses the <a href="https://openlibrary.org/developers/api">Open Library API</a> as a backend source to serve two GraphQL endpoints, and caches responses in Fly&#39;s Redis instance.</p>
+<h2 id='deploying-to-fly' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#deploying-to-fly' aria-label='Anchor'></a>Deploying to Fly</h2>
+<ul>
+<li>Install <a href="https://fly.io/docs/getting-started/installing-flyctl/">flyctl</a>
+</li><li>Login to Fly: <code>flyctl auth login</code>
+</li><li>Create a new Fly app: <code>flyctl apps create</code>
+</li><li>Deploy the app to Fly: <code>flyctl deploy</code>
+</li></ul>
+<p>Once deployed, you can launch the GraphQL Playground by running <code>flyctl open</code>.</p>
+<h2 id='running-graphql-queries' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#running-graphql-queries' aria-label='Anchor'></a>Running GraphQL Queries</h2><p>To search books, enter:</p>
+<div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>{
+ search(search:"for whom the bell tolls") {
+   isbn
+   author_name
+   contributor
+   title
+   first_publish_year
+ }
+}
+</code></pre></div><p>To get a single book by ISBN, enter:</p>
+<div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight '><code>{
+  book(bib_key:"ISBN:0385472579") {
+    bib_key,
+    thumbnail_url,
+    preview_url,
+    info_url
+  }
+}
+</code></pre></div><p>Learn more about GraphQL playground <a href="https://www.apollographql.com/docs/apollo-server/testing/graphql-playground/">in the documentation</a>.</p>
+<p>If you prefer to use to command line, there&#39;s two scripts, <a href="https://github.com/fly-examples/edge-apollo-cache/blob/master/scripts/bookfind.sh"><code>scripts/bookfind.sh</code></a> and <a href="https://github.com/fly-examples/edge-apollo-cache/blob/master/scripts/booksearch.sh"><code>scripts/booksearch.sh</code></a> you can use. Set the environment variable APPNAME to your applications name- you can find the application name with <code>flyctl info</code>.</p>
+<h2 id='what-happens-inside-the-application' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#what-happens-inside-the-application' aria-label='Anchor'></a>What Happens Inside the Application</h2><p>There are a number of parts of the server which are mostly defining the configuration of the packages used. <code>apollo-server</code> handles the web interactions, <code>apollo-server-cache-redis</code> is a component for that server which manages Redis as a general purpose cache and <code>apollo-server-plugin-response-cache</code> uses that cache for the particular job of caching responses from API requests.</p>
+<p>When a query arrives at the ApolloServer, it is filtered through the GraphQL types definition <code>typeDefs</code> and then matched with resolvers defined in <code>resolvers</code>. Both define the endpoints in terms of GraphQL types - for parsing the query - and in terms of datasources where the query can be resolved.</p>
+<p>In this case there are two queries, book and search. The resolvers definition maps each of these to the same RESTDataSource which is configured in books-api.js. It&#39;s there that the connection to the openlibrary.org REST API is defined.</p>
+<p>Once the REST query has been fulfilled, the server will return the results as JSON to the client that made the query. And in the background if its been configured to cache that result, it&#39;ll cache that response. Needless to say, it will also check on incoming queries to see if it already has a cached result to return.</p>
+<p>In <code>index.js</code>, after the definition of the <code>typeDefs</code> and <code>resolvers</code>, the application has code to create the RedisCache, either locally or using Fly&#39;s global Redis service. Environment variables with a connection string to the server determine which.</p>
+<p>Finally an ApolloServer is created, is given all the configured items, the <code>typedefs</code>, <code>resolvers</code>, a list of datasources, a cache with parameters and the <code>responseCachePlugin</code> and the server is set off listening for incoming requests.</p>
+<p>If you are wondering where the GraphQL Playground comes from in this, that&#39;s an integrated part of the Apollo Server.</p>
+<h2 id='how-does-fly-fit-into-this' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#how-does-fly-fit-into-this' aria-label='Anchor'></a>How Does Fly Fit Into This?</h2><p>Traditionally, an application like this would run somewhere in the cloud and usually distant from its users thanks to geography. The biggest problem then is the latency of the connection between the user and the application.</p>
+<p>As we previously mentioned, Fly runs tiny virtual machines close to users in datacenters around the world. Some of these machines handle connections, terminating TLS as close to the user as possible. As TLS needs a couple of connections to get going, thats a big boost, especially with an API. The connection handlers then pass the connection on to the application itself.</p>
+<p>Applications are also run all over the world and Fly lets you put your applications in the most appropriate regions for your task. An edge cache like this could be located in the locations where you are finding the most traffic. When there is no immediatly local application, Fly automatically finds the closest place the application is running and directs connections to that place.</p>
+<p>Edge hosting (and Fly specifically) offers significant performance benefits over traditional centralized hosting. Because requests can be served from the node closest to the user, responses will be much faster. This example uses Redis to cache responses so after the first request is made to a region, duplicate requests in the next hour will be significantly faster.</p>
+<h2 id='testing-latency-with-curl' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#testing-latency-with-curl' aria-label='Anchor'></a>Testing Latency With cURL</h2><p>If you&#39;re running on MacOS or Linux, you likely already have the cURL command line tool installed. cURL can print timing data for requests, here are examples that show total request time, TCP connect time, and TLS handshake time.</p>
+<h4 id='graphql-curl-request' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#graphql-curl-request' aria-label='Anchor'></a>GraphQL cURL Request</h4><p>See <a href="https://github.com/fly-examples/edge-apollo-cache/blob/master/scripts/timegraphqlapi.sh"><code>scripts/timegraphqlapi.sh</code></a></p>
+<div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight curl'><code>curl 'https://&lt;appname&gt;.fly.dev/' \
+  -o /dev/null -sS \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"operationName":null,"variables":{},"query":"{ book(bib_key: \"ISBN:0385472579\") {\n    bib_key\n    thumbnail_url\n    preview_url\n    info_url\n  }\n}\n"}' \
+  -w "Timings\n------\ntotal:   %{time_total}\nconnect: %{time_connect}\ntls:     %{time_appconnect}\n"
+</code></pre></div><h4 id='source-api-curl-request' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#source-api-curl-request' aria-label='Anchor'></a>Source API cURL Request</h4><p>See <a href="https://github.com/fly-examples/edge-apollo-cache/blob/master/scripts/timesourceapi.sh"><code>scripts/timesourceapi.sh</code></a></p>
+<div class='highlight relative group '><button class='group-hover:opacity-100 opacity-0 transition-all absolute right-0 top-0 z-20 w-12 h-12 p-4 text-gray-400 hover:text-white z-10 outline-none focus:outline-none' aria-label='Copy' data-copy-target='sibling' data-copy-success="%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke-linecap='round' stroke-width='2' stroke='white' fill='none' stroke='currentColor' %3E%3Cpath d='m16.376 7.924-6.043 8.095-2.895-3.354' /%3E%3Cpath d='M6 2h12c2.208 0 4 1.792 4 4v12c0 2.208-1.792 4-4 4H6c-2.208 0-4-1.792-4-4V6c0-2.208 1.792-4 4-4Z' /%3E%3C/svg%3E"><svg class='pointer-events-none' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M15.79 10.869a2.66 2.66 0 0 0-2.659-2.659H5.154a2.66 2.66 0 0 0-2.659 2.659v7.977a2.66 2.66 0 0 0 2.659 2.659h7.977a2.66 2.66 0 0 0 2.659-2.659v-7.977Z' /><path d='M15.79 15.758h3.089a2.661 2.661 0 0 0 2.659-2.66V5.121a2.661 2.661 0 0 0-2.659-2.659h-7.977a2.661 2.661 0 0 0-2.66 2.659v2.368' /></svg></button><pre class='highlight curl'><code>curl 'https://openlibrary.org/api/books?bibkeys=ISBN:0385472579' \
+    -o /dev/null -sS \
+    -w "Timings\n------\ntotal:   %{time_total}\nconnect: %{time_connect}\ntls:     %{time_appconnect}\n"
+</code></pre></div><h2 id='latency-results' class='group flex items-center whitespace-pre-wrap relative mt-14 mb-6 text-navy font-heading'><a class='absolute ml-[-1em] pr-[0.5em] after:hash opacity-0 group-hover:opacity-50 transition-all' href='#latency-results' aria-label='Anchor'></a>Latency Results</h2><p>Here are some sample response times using this app hosted on Fly vs. making requests to the Open Library API directly:</p>
+<div class='min-w-0 overflow-x-auto bg-white shadow-md rounded-xl lg:-mx-8 mb-7 ring-1 ring-gray-700 ring-opacity-10'><table class='table-stripe table-stretch table-pad text-sm whitespace-nowrap m-0'><thead class='text-navy text-left'><tr>
+<th>Request Method</th>
+<th>Test 1</th>
+<th>Test 2</th>
+<th>Test 3</th>
+</tr>
+</thead><tbody><tr>
+<td><a href="#source-api-curl-request">Open Library API</a></td>
+<td>2.06s</td>
+<td>1.70s</td>
+<td>1.24s</td>
+</tr>
+<tr>
+<td><a href="#graphql-curl-request">Fly.io (uncached)</a></td>
+<td>1.01s</td>
+<td>1.03s</td>
+<td>2.27s</td>
+</tr>
+<tr>
+<td><a href="#graphql-curl-request">Fly.io (cached)</a></td>
+<td>0.13s</td>
+<td>0.11s</td>
+<td>0.09s</td>
+</tr>
+</tbody></table></div><p>On uncached requests, Fly.io must connect to the Open Library API, but subsequent requests will load data from the regional Fly cache. You can try these tests locally using <a href="#testing-latency-with-curl">cURL</a></p>
